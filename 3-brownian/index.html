@@ -9,7 +9,11 @@
         var WIDTH = 640,
             HEIGHT = 480,
             COUNT = 500,
-            R = 3;
+            MOUSE_R = 32,
+            R = 3,
+
+            MR_R_SQUARED = (MOUSE_R * R) * (MOUSE_R * R),
+            DR_SQUARED = 4 * R * R;
 
         function rand(max) {
           return Math.ceil(Math.random() * max);
@@ -21,11 +25,21 @@
 
         window.onload = function() {
 
+          var mousePos = [0, 0],
+              isMouseEnter = false;
+
           var svg = d3.select('#container')
             .append('svg')
             .attr('width', WIDTH)
             .attr('height', HEIGHT)
-            .style('background-color', 'black');
+            .style('background-color', 'black')
+            .on('mousemove', function() {
+              mousePos = d3.mouse(this);
+              isMouseEnter = true;
+            })
+            .on('mouseleave', function() {
+              isMouseEnter = false;
+            });
 
           // particles
           var p = [];
@@ -76,9 +90,20 @@
                 p[i].vy *= -1;
               }
 
-              // particle-particle collisions
+              // particle-particle collision
               for (var j = 0; j < COUNT; j++) {
-                if (i !== j && (4 * R * R) > distSquared(nx, ny, p[j].x, p[j].y)) {
+                // mouse
+                if (isMouseEnter && MR_R_SQUARED > distSquared(nx, ny, mousePos[0], mousePos[1])) {
+                  var dx = p[i].x - mousePos[0],
+                      dy = p[i].y - mousePos[1],
+                      len = Math.sqrt(dx * dx + dy * dy);
+
+                  p[i].vx = (dx / len) * 3;
+                  p[i].vy = (dy / len) * 3;
+                }
+
+                // other particles
+                if (i !== j && DR_SQUARED > distSquared(nx, ny, p[j].x, p[j].y)) {
                   var vx = p[i].vx,
                       vy = p[i].vy;
 
