@@ -9,10 +9,14 @@
         var WIDTH = 640,
             HEIGHT = 480,
             COUNT = 500,
-            R = 2;
+            R = 3;
 
         function rand(max) {
           return Math.ceil(Math.random() * max);
+        }
+
+        function distSquared(x1, y1, x2, y2) {
+          return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
         }
 
         window.onload = function() {
@@ -47,25 +51,42 @@
 
           function loop() {
             for (var i = 0; i < COUNT; i++) {
+
+              var nx = p[i].x + p[i].vx,
+                  ny = p[i].y + p[i].vy;
+
               // boundaries
-              if (p[i].x > WIDTH - R) {
+              if (nx > WIDTH - R) {
                 p[i].x = WIDTH - R;
                 p[i].vx *= -1;
               }
 
-              if (p[i].x < R) {
+              if (nx < R) {
                 p[i].x = R;
                 p[i].vx *= -1;
               }
 
-              if (p[i].y > HEIGHT - R) {
+              if (ny > HEIGHT - R) {
                 p[i].y = HEIGHT - R;
                 p[i].vy *= -1;
               }
 
-              if (p[i].y < R) {
+              if (ny < R) {
                 p[i].y = R;
                 p[i].vy *= -1;
+              }
+
+              // particle-particle collisions
+              for (var j = 0; j < COUNT; j++) {
+                if (i !== j && (4 * R * R) > distSquared(nx, ny, p[j].x, p[j].y)) {
+                  var vx = p[i].vx,
+                      vy = p[i].vy;
+
+                  p[i].vx = p[j].vx;
+                  p[i].vy = p[j].vy;
+                  p[j].vx = vx;
+                  p[j].vy = vy;
+                }
               }
 
               // step
