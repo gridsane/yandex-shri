@@ -23,7 +23,6 @@
           width: 300px;
           height: 300px;
       }
-
       .equalizer span {
           vertical-align: bottom;
           display: inline-block;
@@ -37,9 +36,8 @@
         function setEqualizer(elementId, duration, colWidth) {
             var element = document.getElementById(elementId).getElementsByClassName('equalizer')[0],
                 colWidth = colWidth || 10,
-                elWidth = element.offsetWidth,
                 elHeight = element.offsetHeight,
-                colQuantity = Math.ceil(elWidth / colWidth),
+                colQuantity = Math.ceil(element.offsetWidth / colWidth),
                 cols = [];
 
             element.style.lineHeight = elHeight + 'px';
@@ -53,22 +51,34 @@
                 cols.push({
                     el: col,
                     height: 0,
-                    targetHeight: Math.random() * elHeight,
+                    targetHeight: 0,
+                    step: 0
                 });
             };
 
+            function initColsHeights(cols) {
+                for (var i = 0; i < colQuantity; i++) {
+                    cols[i].height = Math.random() * elHeight;
+                    cols[i].targetHeight = elHeight / 2;
+                    cols[i].step = (cols[i].targetHeight - cols[i].height) / duration;
+                }
+            }
+
             var lastTime = new Date().getTime(),
-                startTime = lastTime;
+                startTime = 0;
 
             var equalizerStep = function () {
-                var t  = new Date().getTime(),
-                    dt = (t - lastTime)/1000;
+                var t  = new Date().getTime(), // milliseconds
+                    dt = (t - lastTime)/1000; // seconds
 
-                if ((t - startTime)/1000 <= duration) {
-                    for (var i = 0; i < colQuantity; i++) {
-                        cols[i].height += dt;
-                        cols[i].el.style.height = parseInt(cols[i].height) + 'px';
-                    }
+                if ((t - startTime)/1000 > duration) {
+                    initColsHeights(cols);
+                    startTime = t;
+                }
+
+                for (var i = 0; i < colQuantity; i++) {
+                    cols[i].height += cols[i].step * dt;
+                    cols[i].el.style.height = parseInt(cols[i].height) + 'px';
                 }
 
                 lastTime = t;
@@ -79,7 +89,9 @@
         }
 
         window.onload = function () {
-          setEqualizer('eq_3', 10, 1);
+          setEqualizer('eq_1', 1, 1);
+          setEqualizer('eq_2', 1, 1);
+          setEqualizer('eq_3', 1, 1);
         }
     </script>
   </head>
