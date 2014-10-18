@@ -5,8 +5,15 @@
     <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
     <script type="text/javascript">
       (function () {
+
         var WIDTH = 640,
-            HEIGHT = 480;
+            HEIGHT = 480,
+            COUNT = 500,
+            R = 2;
+
+        function rand(max) {
+          return Math.ceil(Math.random() * max);
+        }
 
         window.onload = function() {
 
@@ -16,8 +23,39 @@
             .attr('height', HEIGHT)
             .style('background-color', 'black');
 
+          // particles
+          var p = [];
+
+          for (var i = 0; i < COUNT; i++) {
+            var x = rand(WIDTH),
+                y = rand(HEIGHT);
+
+            var particle = svg.append('circle')
+              .attr('r', R)
+              .attr('cx', x)
+              .attr('cy', y)
+              .style('fill', 'red');
+
+            p[i] = {
+              el: particle,
+              x: x,
+              y: y,
+              vx: rand(6) - 3 || 1,
+              vy: rand(6) - 3 || 1
+            }
+          }
+
           function loop() {
-            requestAnimFrame(loop);
+            for (var i = 0; i < COUNT; i++) {
+              p[i].x += p[i].vx;
+              p[i].y += p[i].vy;
+
+              p[i].el
+                .attr('cx', p[i].x)
+                .attr('cy', p[i].y);
+            }
+
+            requestAnimationFrame(loop);
           }
 
           loop();
