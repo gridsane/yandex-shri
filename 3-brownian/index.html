@@ -23,6 +23,20 @@
           return (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
         }
 
+        function colorTransition(el, duration) {
+          el.transition()
+            .duration(duration)
+            .style('fill', 'red')
+            .each('end', function() {
+              el.transition()
+                .duration(duration)
+                .style('fill', 'yellow')
+                .each('end', function() {
+                  colorTransition(el, duration);
+                });
+            });
+        }
+
         window.onload = function() {
 
           var mousePos = [0, 0],
@@ -53,6 +67,8 @@
               .attr('cx', x)
               .attr('cy', y)
               .style('fill', 'red');
+
+            colorTransition(particle, rand(1000) + 300)
 
             p[i] = {
               el: particle,
