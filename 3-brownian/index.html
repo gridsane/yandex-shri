@@ -47,6 +47,28 @@
 
           function loop() {
             for (var i = 0; i < COUNT; i++) {
+              // boundaries
+              if (p[i].x > WIDTH - R) {
+                p[i].x = WIDTH - R;
+                p[i].vx *= -1;
+              }
+
+              if (p[i].x < R) {
+                p[i].x = R;
+                p[i].vx *= -1;
+              }
+
+              if (p[i].y > HEIGHT - R) {
+                p[i].y = HEIGHT - R;
+                p[i].vy *= -1;
+              }
+
+              if (p[i].y < R) {
+                p[i].y = R;
+                p[i].vy *= -1;
+              }
+
+              // step
               p[i].x += p[i].vx;
               p[i].y += p[i].vy;
 
