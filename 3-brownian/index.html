@@ -9,11 +9,11 @@
         var WIDTH = 640,
             HEIGHT = 480,
             COUNT = 500,
-            MOUSE_R = 32,
+            MOUSE_R = 48,
+            BLAST_R = 72,
             R = 3,
 
-            MR_R_SQUARED = (MOUSE_R * R) * (MOUSE_R * R),
-            DR_SQUARED = 4 * R * R;
+            R_SQUARED = R * R;
 
         function rand(max) {
           return Math.ceil(Math.random() * max);
@@ -38,9 +38,9 @@
         }
 
         window.onload = function() {
-
           var mousePos = [0, 0],
-              isMouseEnter = false;
+              isMouseEnter = false,
+              clickRadius = 0;
 
           var svg = d3.select('#container')
             .append('svg')
@@ -53,7 +53,13 @@
             })
             .on('mouseleave', function() {
               isMouseEnter = false;
+            })
+            .on('click', function() {
+              clickRadius = 1;
             });
+
+          var blast = svg.append('circle')
+            .style('stroke', 'grey');
 
           // particles
           var p = [];
@@ -80,6 +86,15 @@
           }
 
           function loop() {
+            blast
+              .attr('cx', mousePos[0])
+              .attr('cy', mousePos[1])
+              .attr('r', clickRadius + MOUSE_R)
+              .style(
+                'opacity',
+                clickRadius > 0 ? 1 - (clickRadius * (1/BLAST_R)) : 0
+              );
+
             for (var i = 0; i < COUNT; i++) {
 
               var nx = p[i].x + p[i].vx,
@@ -108,8 +123,10 @@
 
               // particle-particle collision
               for (var j = 0; j < COUNT; j++) {
+                var r = MOUSE_R + clickRadius;
+
                 // mouse
-                if (isMouseEnter && MR_R_SQUARED > distSquared(nx, ny, mousePos[0], mousePos[1])) {
+                if (isMouseEnter && (r * r + R_SQUARED) > distSquared(nx, ny, mousePos[0], mousePos[1])) {
                   var dx = p[i].x - mousePos[0],
                       dy = p[i].y - mousePos[1],
                       len = Math.sqrt(dx * dx + dy * dy);
@@ -119,7 +136,7 @@
                 }
 
                 // other particles
-                if (i !== j && DR_SQUARED > distSquared(nx, ny, p[j].x, p[j].y)) {
+                if (i !== j && 4 * R_SQUARED > distSquared(nx, ny, p[j].x, p[j].y)) {
                   var vx = p[i].vx,
                       vy = p[i].vy;
 
@@ -137,6 +154,12 @@
               p[i].el
                 .attr('cx', p[i].x)
                 .attr('cy', p[i].y);
+            }
+
+            if (clickRadius > 0 && clickRadius < BLAST_R) {
+              clickRadius += BLAST_R / 10;
+            } else {
+              clickRadius = 0;
             }
 
             requestAnimationFrame(loop);
