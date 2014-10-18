@@ -50,29 +50,33 @@
 
                 cols.push({
                     el: col,
-                    height: 0,
+                    height: Math.random() * elHeight,
                     targetHeight: 0,
                     step: 0
                 });
             };
 
-            function initColsHeights(cols) {
+            function initColsHeights(cols, isCenter) {
                 for (var i = 0; i < colQuantity; i++) {
-                    cols[i].height = Math.random() * elHeight;
-                    cols[i].targetHeight = elHeight / 2;
+                    cols[i].targetHeight = isCenter
+                        ? elHeight / 2
+                        : Math.random() * elHeight;
+
                     cols[i].step = (cols[i].targetHeight - cols[i].height) / duration;
                 }
             }
 
             var lastTime = new Date().getTime(),
-                startTime = 0;
+                startTime = 0,
+                isCenter = true;
 
             var equalizerStep = function () {
                 var t  = new Date().getTime(), // milliseconds
                     dt = (t - lastTime)/1000; // seconds
 
                 if ((t - startTime)/1000 > duration) {
-                    initColsHeights(cols);
+                    initColsHeights(cols, isCenter);
+                    isCenter = !isCenter;
                     startTime = t;
                 }
 
@@ -90,8 +94,8 @@
 
         window.onload = function () {
           setEqualizer('eq_1', 1, 1);
-          setEqualizer('eq_2', 1, 1);
-          setEqualizer('eq_3', 1, 1);
+          setEqualizer('eq_2', 2, 1);
+          setEqualizer('eq_3', 3, 1);
         }
     </script>
   </head>
