@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Brownian</title>
+    <script type="text/javascript" src="http://d3js.org/d3.v3.min.js"></script>
+    <script type="text/javascript">
+      (function () {
+        var WIDTH = 640,
+            HEIGHT = 480;
+
+        window.onload = function() {
+
+          var svg = d3.select('#container')
+            .append('svg')
+            .attr('width', WIDTH)
+            .attr('height', HEIGHT)
+            .style('background-color', 'black');
+
+          function loop() {
+            requestAnimFrame(loop);
+          }
+
+          loop();
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="container"></div>
+  </body>
+</html>
