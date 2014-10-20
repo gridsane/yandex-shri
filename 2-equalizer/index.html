@@ -67,21 +67,22 @@
         }
 
         var lastTime = new Date().getTime(),
-          startTime = 0,
+          startTime = lastTime - duration,
           isCenter = true;
 
         function equalizerStep() {
-          var t  = new Date().getTime(), // milliseconds
-            dt = (t - lastTime)/1000; // seconds
+          var t  = new Date().getTime(),
+            timePassed = t - startTime;
 
-          if ((t - startTime)/1000 > duration) {
+          if (timePassed >= duration) {
             initColsHeights(cols, isCenter);
             isCenter = !isCenter;
             startTime = t;
+            timePassed = 0;
           }
 
           for (var i = 0; i < colQuantity; i++) {
-            cols[i].height += cols[i].step * dt;
+            cols[i].height = cols[i].targetHeight - (cols[i].step * (duration - timePassed));
             cols[i].el.style.height = parseInt(cols[i].height) + 'px';
           }
 
@@ -93,9 +94,9 @@
       }
 
       window.onload = function() {
-        setEqualizer('eq_1', 1, 1);
-        setEqualizer('eq_2', 2, 1);
-        setEqualizer('eq_3', 3, 1);
+        setEqualizer('eq_1', 1000, 1);
+        setEqualizer('eq_2', 1000, 1);
+        setEqualizer('eq_3', 1000, 1);
       }
     </script>
   </head>
